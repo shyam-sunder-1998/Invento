@@ -1,0 +1,46 @@
+body{
+	margin:0 auto;
+	padding:0 px;
+	background-image:url("images/img123.jpg");
+	background-size:cover;
+}
+.panel-default{
+	background-color:white;
+	opacity:0.9;
+	max-width:40%;
+	max-height:80%;
+	margin:0 auto;
+}
+
+.form-signin{
+	margin:0 auto;
+	max-width:350px;
+	margin-top:50px;	
+}
+.display-4{
+	color:#8BC34A;
+}
+
+
+@media(max-width: 576px) {
+    .panel-default{
+        max-width:100%;
+    }
+}
+
+@media (max-width: 767px) {
+	.panel-default{
+        max-width:100%;
+    }
+}
+
+@media (max-width: 991px) {
+	.panel-default{
+        max-width:100%;
+    }
+}
+
+.form-control:focus {
+  border-color: #2980b9;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 256, 0.6);
+}

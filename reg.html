@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Registration Page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="login.css">
+
+</head>
+<body onload="read_uname()">
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>                        
+				</button>
+				<img class="img-thumbnail" src="images/ic1.png" alt="logo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a class="navbar-brand" href="#">Invento</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="#">Home</a></li>
+				<li><a href="#">About</a></li>
+				<li><a href="#">FAQ</a></li>
+			</ul>
+		</div>
+		</div>
+	</nav>
+	<div class="container">
+	<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="form-signin">
+			<form method="post" action="register_db.php" id="reg_form">
+				<center><h1 class="display-4">Registration</h1></center>
+				<div class="form-group">
+					<label for="uname" class="sr-only">E-mail</label>
+					<input type="text" id="uname" class="form-control input-lg" name="uname" placeholder="Username" required />
+					<center><b><span id="success" style="display:none;"><h4 class="text-success">Username Available</h4></span></b></center>
+					<center><b><span id="error" style="display:none;"><h4 class="text-danger">Username Already Exists</h4></span></b></center>
+				</div>
+				<div class="form-group">
+					<label for="pass" class="sr-only">Password</label>
+					<input type="password" id="pass" class="form-control input-lg" name="pass" placeholder="Password" required />
+				</div>
+				<div class="form-group">
+					<label for="ques" class="sr-only">Security Question</label>
+					<input type="text" id="ques" class="form-control input-lg" name="ques" placeholder="Security Question" required />
+				</div>
+				<div class="form-group">
+					<label for="ans" class="sr-only">Answer</label>
+					<input type="text" id="ans" class="form-control input-lg" name="ans" placeholder="Answer" required />
+				</div>
+				<button type="submit" class="btn btn-lg btn-primary btn-block">Submit</button><br/>
+				<br/><br/><br/><br/><br/><br/>
+			</form>
+		</div>
+		</div>
+		</div>
+	</div>
+	<script  type="text/javascript">
+	var newname,getname,flag=0; 
+
+	function read_uname(){
+		responsiveVoice.speak ("Spell ur username for registration");
+		setTimeout(username, 3000);
+	}
+		
+	function username(){
+		if(window.hasOwnProperty('webkitSpeechRecognition')){
+			var recognition1 = new webkitSpeechRecognition();
+			recognition1.lang ="en-IN";
+			recognition1.start();
+			recognition1.onresult=function(event){
+				if(event.results.length>0){
+					getname=event.results[0][0].transcript;
+					getname=getname.toLowerCase();
+					recognition1.stop();
+					uname_check();
+				}
+			}
+			recognition1.onend = function(){
+				if(document.getElementById('uname').value==''){ 
+					responsiveVoice.speak("Can't recognize, please spell again.");
+					recognition1.start();
+				}
+			}
+		}
+	}
+	function uname_check(){
+		newname=getname.replace(/\s+/g, '');
+		uname.value=newname;
+		responsiveVoice.speak("The name you entered is.."+newname);
+		responsiveVoice.speak("If the entered username is correct say yes, else no");
+		uname_options();
+	}
+
+	function uname_options(){
+		if (annyang) {
+			var commands = {
+				'yes': function() { responsiveVoice.speak("Please wait while I check if username is available");annyang.abort(); setTimeout(uname_db,4000);},
+				'no': function()  { responsiveVoice.speak("Please spell again");annyang.abort(); uname.value="" ;username();},
+				'ok back':function(){window.location="http://localhost/email/intro/"; annyang.abort();},
+			};
+			annyang.debug(true);
+			annyang.addCommands(commands);
+			annyang.start();
+		}
+	}
+
+	function uname_db(){
+		var name=document.getElementById( "uname" ).value;
+ 		$.ajax({
+  			type: 'post',
+  			url: 'check_name.php',
+  			data: {
+   				user_name:name,
+ 			},
+  			success: function (response) {
+   				if(response==1){
+   					$("#success").show();
+   					$("#error").hide();
+   					responsiveVoice.speak("Username available, and entered Successfully");
+   					read_pass();
+    				return true;	
+   				}
+   				else{
+   					$("#error").show();
+   					$("#success").hide();
+   					responsiveVoice.speak("Username Already Exists.Please select another.");
+					uname.value="";
+   					username();
+    				return false;	
+   				}
+  			}
+  		});
+ 	}
+
+	function read_pass(){
+		responsiveVoice.speak ("Spell ur Password now");
+		setTimeout(password, 5000);
+	}
+		
+	function password(){
+		if(window.hasOwnProperty('webkitSpeechRecognition')){
+			var recognition2 = new webkitSpeechRecognition();
+			recognition2.lang ="en-IN";
+			recognition2.start();
+			recognition2.onresult=function(event){
+				if(event.results.length>0){
+					getname=event.results[0][0].transcript;
+					getname=getname.toLowerCase();
+					recognition2.stop();
+					pass_check();
+				}
+			}
+			recognition2.onend = function(){
+				if(document.getElementById('pass').value==''){ 
+					responsiveVoice.speak("Can't recognize, please spell again.");
+					recognition2.start();
+				}
+			}
+		}
+	}
+	function pass_check(){
+		newname=getname.replace(/\s+/g, '');
+		pass.value=newname;
+		responsiveVoice.speak("The password you said is.."+newname);
+		responsiveVoice.speak("If the entered password is correct say yes, else no");
+		pass_options();
+	}
+
+	function pass_options(){
+		if (annyang) {
+			var commands = {
+				'yes': function() { responsiveVoice.speak("Successfully entered."); annyang.abort(); read_ques();},
+				'no': function()  { responsiveVoice.speak("Please spell again");annyang.abort(); pass.value=""; password();},
+				'ok back':function(){window.location="http://localhost/email/intro/"; annyang.abort();},
+			};
+			annyang.debug(true);
+			annyang.init(commands,true);
+			annyang.addCommands(commands);
+			annyang.start();
+		}
+	}
+
+	function read_ques(){
+		responsiveVoice.speak ("Enter a security question");
+		setTimeout(question, 5000);
+	}
+		
+	function question(){
+		if(window.hasOwnProperty('webkitSpeechRecognition')){
+			var recognition3 = new webkitSpeechRecognition();
+			recognition3.lang ="en-IN";
+			recognition3.start();
+			recognition3.onresult=function(event){
+				if(event.results.length>0){
+					getname=event.results[0][0].transcript;
+					getname=getname.toLowerCase();
+					recognition3.stop();
+					ques_check();
+				}
+			}
+			recognition3.onend = function(){
+				if(document.getElementById('ques').value==''){ 
+					responsiveVoice.speak("Can't recognize, please spell again.");
+					recognition3.start();
+				}
+			}
+		}
+	}
+	function ques_check(){
+		ques.value=getname;
+		responsiveVoice.speak("The security question you entered is.."+getname);
+		responsiveVoice.speak("If the entered question is correct say yes, else no");
+		ques_options();
+	}
+
+	function ques_options(){
+		if (annyang) {
+			var commands = {
+				'yes': function() { responsiveVoice.speak("Successfully entered.");annyang.abort(); read_ans();},
+				'no': function()  { responsiveVoice.speak("Please say again ");annyang.abort(); ques.value="" ;question();},
+				'ok back':function(){window.location="http://localhost/email/intro/"; annyang.abort();},
+			};
+			annyang.debug(true);
+			annyang.init(commands,true);
+			annyang.addCommands(commands);
+			annyang.start();
+		}
+	}
+
+	function read_ans(){
+		responsiveVoice.speak ("Now,enter answer for the security question");
+		setTimeout(answer, 5000);
+	}
+		
+	function answer(){
+		if(window.hasOwnProperty('webkitSpeechRecognition')){
+			var recognition4 = new webkitSpeechRecognition();
+			recognition4.lang ="en-IN";
+			recognition4.start();
+			recognition4.onresult=function(event){
+				if(event.results.length>0){
+					getname=event.results[0][0].transcript;
+					getname=getname.toLowerCase();
+					recognition4.stop();
+					ans_check();
+				}
+			}
+			recognition4.onend = function(){
+				if(document.getElementById('ans').value==''){ 
+					responsiveVoice.speak("Can't recognize, please spell again.");
+					recognition4.start();
+				}
+			}
+		}
+	}
+	function ans_check(){
+		newname=getname.replace(/\s+/g, '');
+		ans.value=newname;
+		responsiveVoice.speak("The answer you entered is.."+newname);
+		responsiveVoice.speak("If the entered answer is correct say yes, else no");
+		ans_options();
+	}
+
+	function ans_options(){
+		if (annyang) {
+			var commands = {
+				'yes': function() { responsiveVoice.speak("Successfully entered.Registration Successfull"); document.forms["reg_form"].submit(); annyang.abort();},
+				'no': function()  { responsiveVoice.speak("Please say again ");ans.value=""; answer();},
+				'ok back':function(){window.location="http://localhost/email/intro/"; annyang.abort();},
+			};
+			annyang.debug(true);
+			annyang.init(commands,true);
+			annyang.addCommands(commands);
+			annyang.start();
+		}
+	}	 
+	</script>
+	<script src="responsive.js"></script>
+  	<script src="annyang.js"></script>
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  	<script src="bootstrap/js/jquery.min.js"></script>
+  	<script src="bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

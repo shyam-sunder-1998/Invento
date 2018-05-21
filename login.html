@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Login Page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="login.css">
+
+</head>
+<body onload="read_uname()">
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>                        
+				</button>
+				<img class="img-thumbnail" src="images/ic1.png" alt="logo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a class="navbar-brand" href="#">Invento</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Home</a></li>
+					<li><a href="#">About</a></li>
+					<li><a href="#">FAQ</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="container">
+	<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="form-signin">
+			<form method="post" action="email.php" name="login">
+				<center><h1 class="display-4">Login</h1></center>
+				<div class="form-group">
+					<label for="uname" class="sr-only">E-mail</label>
+					<input type="text" id="uname" class="form-control input-lg" name="uname" placeholder="Username" required />
+				</div>
+				<div class="form-group">
+					<label for="pass" class="sr-only">Password</label>
+					<input type="password" id="pass" class="form-control input-lg" name="pass" placeholder="Password" required />
+				</div>
+				<button type="submit" class="btn btn-lg btn-primary btn-block">Submit</button><br/>
+				<a href="http://localhost/email/forgot.php">Forgot password?</a>
+				<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+			</form>
+		</div>
+		</div>
+		</div>
+	</div>
+
+	<script  type="text/javascript">
+		var newname,getname,flag=0; 
+		function read_uname(){
+			responsiveVoice.speak ("Loaded login page Successfully. Enter your username");
+			responsiveVoice.speak ("If u forgot your password say forgot");
+			setTimeout(username, 900);
+		}
+		
+		function username(){
+			if (window.hasOwnProperty('webkitSpeechRecognition')) {
+				var recognition=new webkitSpeechRecognition();
+				recognition.lang = "en-IN";
+				recognition.start();
+				recognition.onresult = function(event) {
+					if (event.results.length > 0) {
+						getname= event.results[0][0].transcript;
+						getname=getname.toLowerCase();
+						if(getname!='forgot'){
+							uname.value=getname;
+							recognition.stop();
+							if(flag==0){
+								read_check();
+							}
+							else{
+								spell_check();
+							}
+						}
+						else if(getname=='forgot'){
+							recognition.stop();
+							window.location="http://localhost/email/forgot.php";	
+						}
+						
+					}
+				}	
+			}
+			recognition.onend = function() {
+				if(document.getElementById('uname').value==''){
+					responsiveVoice.speak('can\'t recognize. please say again');
+					recognition.start();
+				}
+			}
+		}
+		
+		function read_check(){
+			newname=getname.split('').join(' ');
+			responsiveVoice.speak("The name you entered is.."+newname);
+			responsiveVoice.speak("If the entered username is correct say yes, else no ");
+			flag=1;
+			uname_options();
+		}
+		
+		function spell_check(){
+			newname=getname.replace(/\s+/g, '');
+			responsiveVoice.speak("The name you entered is.."+newname);
+			uname.value= newname;
+			responsiveVoice.speak("If the entered username is correct say yes, else no");
+			uname_options();
+		}
+		
+		function uname_options(){
+			if (annyang) {
+				var commands = {
+				'yes': function() { responsiveVoice.speak("Username entered Successfully"); annyang.abort(); read_pass();},
+				'no': function()  { responsiveVoice.speak("please spell again"); annyang.abort(); uname.value=""; username();},
+				'forgot':function(){window.location="http://localhost/email/forgot.php";},
+				'forget':function(){window.location="http://localhost/email/forgot.php";},
+				};
+			annyang.debug(true);
+			annyang.addCommands(commands);
+			annyang.start();
+			}
+		} 
+		
+		function read_pass(){
+			responsiveVoice.speak("Please Spell your password now");
+			setTimeout(password, 5000);
+		}
+		
+		function password(){
+			if (window.hasOwnProperty('webkitSpeechRecognition')) {
+				var recognition=new webkitSpeechRecognition();
+				recognition.lang = "en-IN";
+				recognition.start();
+				recognition.onresult = function(event) {
+					if (event.results.length > 0) {
+						getname= event.results[0][0].transcript;
+						getname=getname.toLowerCase();
+						if(getname!="forgot"){
+							recognition.stop();
+							pass_check();
+						}
+						else if(getname=="forgot"){
+							recognition.stop();
+							window.location="http://localhost/email/forgot.php";
+						}
+					}
+				
+				}	
+			}
+			recognition.onend = function() {
+				if(document.getElementById('pass').value==''){
+					responsiveVoice.speak('can\'t recognize. please spell again');
+					recognition.start();
+				}
+			}
+		}
+		
+		function pass_check(){
+			newname=getname.replace(/\s+/g, '');
+			pass.value=newname;
+			document.forms["login"].submit();
+			submit_form();
+		}
+		
+		function submit_form(){
+			responsiveVoice.speak("Password entered.Successfully submitted");
+		}
+	</script>
+	<script src='responsive.js'></script>
+  <script src='annyang.js'></script>
+  <script src="bootstrap/js/jquery.min.js"></script>
+  <script src="bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
